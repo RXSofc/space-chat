@@ -3,108 +3,447 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Chat</title>
+  <title>Space Chat - Fixed Online Count</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: black;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0e17;
       color: #00ffcc;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      position: relative;
     }
 
     /* ✨ efek bintang */
-    body::before {
-      content: "";
+    .stars {
       position: absolute;
-      top: 0; left: 0;
-      width: 200%;
-      height: 200%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
-      animation: stars 100s linear infinite;
-      z-index: -1;
+      animation: stars 120s linear infinite;
+      z-index: -2;
       opacity: 0.8;
     }
+
+    .twinkling {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent url("https://www.transparenttextures.com/patterns/starfield.png") repeat;
+      animation: twinkling 100s linear infinite;
+      z-index: -1;
+      opacity: 0.4;
+    }
+
     @keyframes stars {
       from { transform: translateY(0px); }
       to { transform: translateY(-1000px); }
     }
 
-    #login, #chat {
-      background: rgba(0, 0, 0, 0.7);
-      border: 2px solid #00ffcc;
-      border-radius: 12px;
-      padding: 20px;
+    @keyframes twinkling {
+      from { background-position: 0 0; }
+      to { background-position: 1000px 5000px; }
+    }
+
+    .container {
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 0 20px #00ffcc;
+      z-index: 1;
     }
-    #chat { display: none; }
+
+    #login, #chat {
+      background: rgba(8, 16, 30, 0.85);
+      border: 2px solid #00ffcc;
+      border-radius: 16px;
+      padding: 25px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+      backdrop-filter: blur(5px);
+    }
+
+    #chat { 
+      display: none;
+      height: 600px;
+      flex-direction: column;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ffcc;
+      text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+      font-size: 24px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #00ffcc;
+    }
+
+    .online-count {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .online-count i {
+      margin-right: 5px;
+      color: #00ff99;
+    }
 
     #messages {
-      height: 300px;
+      flex: 1;
       overflow-y: auto;
       border: 1px solid #00ffcc;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: rgba(5, 12, 22, 0.6);
+      scrollbar-width: thin;
+      scrollbar-color: #00ffcc #08101e;
     }
+
+    #messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #messages::-webkit-scrollbar-track {
+      background: #08101e;
+      border-radius: 3px;
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+      background: #00ffcc;
+      border-radius: 3px;
+    }
+
     #messages p {
-      margin: 5px 0;
+      margin: 12px 0;
+      line-height: 1.5;
     }
+
     .system {
       color: #ff00ff;
       font-style: italic;
       text-align: center;
-    }
-    .timestamp {
-      display: block;
-      font-size: 11px;
-      color: #aaa;
-    }
-    input, button {
-      padding: 10px;
-      border: none;
+      margin: 10px 0;
+      padding: 5px;
+      background: rgba(255, 0, 255, 0.1);
       border-radius: 8px;
-      outline: none;
-      margin: 5px 0;
     }
+
+    .message {
+      padding: 8px 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .my-message {
+      background: rgba(0, 255, 204, 0.15);
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      margin-left: auto;
+    }
+
+    .other-message {
+      background: rgba(30, 30, 70, 0.4);
+      border: 1px solid rgba(100, 100, 200, 0.2);
+    }
+
+    .user {
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .my-message .user {
+      color: #00ffaa;
+    }
+
+    .other-message .user {
+      color: #5599ff;
+    }
+
+    .timestamp {
+      font-size: 11px;
+      color: #8899aa;
+      display: block;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
     input {
       flex: 1;
-      background: black;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      background: rgba(5, 12, 22, 0.8);
       color: #00ffcc;
-      border: 1px solid #00ffcc;
+      border: 1px solid #00aaff;
     }
+
+    input::placeholder {
+      color: #5599cc;
+    }
+
+    input:focus {
+      border-color: #00ffcc;
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+    }
+
     button {
-      background: #00ffcc;
-      color: black;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      background: linear-gradient(135deg, #00ffcc, #00aaff);
+      color: #001122;
       font-weight: bold;
       cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #00ddbb, #0099ee);
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.7);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .instructions {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #5599cc;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      border-radius: 8px;
+      background: rgba(255, 50, 50, 0.9);
+      color: white;
+      z-index: 100;
+      display: none;
+    }
+
+    .admin-panel {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed #00ffcc;
+      text-align: center;
+    }
+
+    .admin-btn {
+      background: linear-gradient(135deg, #ff3366, #ff2277);
+      font-size: 13px;
+      padding: 8px 15px;
+    }
+
+    .admin-btn:hover {
+      background: linear-gradient(135deg, #ee1155, #dd0066);
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.7);
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .remember-me input {
+      width: auto;
+      flex: none;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: rgba(10, 14, 23, 0.95);
+      border: 2px solid #00ffcc;
+      border-radius: 16px;
+      padding: 25px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
+    }
+
+    .modal h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ffcc;
+    }
+
+    .modal-input {
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 5px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .modal-btn {
+      min-width: 100px;
+    }
+
+    .modal-btn.cancel {
+      background: linear-gradient(135deg, #888888, #666666);
+    }
+
+    .modal-btn.cancel:hover {
+      background: linear-gradient(135deg, #777777, #555555);
+      box-shadow: 0 0 12px rgba(136, 136, 136, 0.7);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+      }
+      
+      #login, #chat {
+        padding: 15px;
+      }
+      
+      .input-area {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+      
+      .modal-content {
+        padding: 15px;
+      }
+      
+      .modal-buttons {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="login">
-    <h2>🚀 Masuk ke Space Chat</h2>
-    <input type="text" id="username" placeholder="Masukkan nama...">
-    <button onclick="joinChat()">Gabung</button>
+  <div class="stars"></div>
+  <div class="twinkling"></div>
+  
+  <div class="container">
+    <div id="login">
+      <h2><i class="fas fa-rocket"></i> Space Chat</h2>
+      <div class="login-form">
+        <input type="text" id="username" placeholder="Masukkan nama pengguna..." maxlength="20">
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" checked>
+          <label for="rememberMe">Ingat saya</label>
+        </div>
+        <button onclick="joinChat()">
+          <i class="fas fa-sign-in-alt"></i> Gabung Chat
+        </button>
+      </div>
+      <div class="instructions">
+        <p>Gunakan nama yang unik. Maksimal 20 karakter.</p>
+      </div>
+    </div>
+
+    <div id="chat">
+      <div class="header">
+        <h2><i class="fas fa-comments"></i> Space Chat</h2>
+        <div class="online-count">
+          <i class="fas fa-users"></i>
+          <span id="userCount">0</span> online
+        </div>
+      </div>
+      
+      <div id="messages"></div>
+      
+      <div class="input-area">
+        <input type="text" id="messageInput" placeholder="Tulis pesan Anda..." maxlength="500">
+        <button onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i> Kirim
+        </button>
+      </div>
+      
+      <div class="admin-panel">
+        <button class="admin-btn" onclick="showPinModal()">
+          <i class="fas fa-trash"></i> Hapus Semua Chat
+        </button>
+      </div>
+    </div>
   </div>
 
-  <div id="chat">
-    <h2>✨ Space Chat Group</h2>
-    <div id="messages"></div>
-    <input type="text" id="messageInput" placeholder="Tulis pesan...">
-    <button onclick="sendMessage()">Kirim</button>
+  <div class="notification" id="notification"></div>
+  
+  <!-- Modal untuk PIN -->
+  <div class="modal" id="pinModal">
+    <div class="modal-content">
+      <h3><i class="fas fa-lock"></i> Masukkan PIN Admin</h3>
+      <input type="password" id="pinInput" class="modal-input" placeholder="XXXX" maxlength="4">
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="hidePinModal()">Batal</button>
+        <button class="modal-btn" onclick="verifyPin()">Hapus Chat</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, onValue, remove, set, onDisconnect } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     // Firebase config
     const firebaseConfig = {
@@ -117,80 +456,256 @@
       databaseURL: "https://webchat-grup-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const chatRef = ref(db, "chats");
+    const onlineUsersRef = ref(db, "onlineUsers");
+
+    // PIN untuk menghapus chat
+    const ADMIN_PIN = "1903";
 
     let username = "";
+    let userId = "";
+    let userRef = null;
 
-    // Format tanggal + jam
+    // Cek apakah ada username yang tersimpan di local storage
+    function checkStoredUsername() {
+      const storedUsername = localStorage.getItem('chatUsername');
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+      
+      if (storedUsername && rememberMe) {
+        document.getElementById('username').value = storedUsername;
+        document.getElementById('rememberMe').checked = true;
+      }
+    }
+
+    // Format timestamp
     function formatTimestamp(ts) {
       return new Date(ts).toLocaleString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit"
       });
     }
 
-    // Join chat
-    window.joinChat = function() {
-      const input = document.getElementById("username");
-      username = input.value.trim();
-      if (!username) username = "Anonim";
+    // Show notification
+    function showNotification(message, isError = true) {
+      const notification = document.getElementById("notification");
+      notification.textContent = message;
+      notification.style.display = "block";
+      notification.style.background = isError 
+        ? "rgba(255, 50, 50, 0.9)" 
+        : "rgba(0, 200, 100, 0.9)";
+      
+      setTimeout(() => {
+        notification.style.display = "none";
+      }, 3000);
+    }
 
-      document.getElementById("login").style.display = "none";
-      document.getElementById("chat").style.display = "block";
-
-      push(chatRef, { user: "SYSTEM", text: `${username} bergabung ke chat`, time: Date.now(), system: true });
+    // Tampilkan modal PIN
+    window.showPinModal = function() {
+      document.getElementById('pinModal').style.display = 'flex';
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
     };
 
-    // Kirim pesan
-    window.sendMessage = function() {
-      const input = document.getElementById("messageInput");
-      const text = input.value.trim();
-      if (text) {
-        push(chatRef, {
-          user: username,
-          text: text,
-          time: Date.now(),
-          system: false
-        });
-        input.value = "";
+    // Sembunyikan modal PIN
+    window.hidePinModal = function() {
+      document.getElementById('pinModal').style.display = 'none';
+    };
+
+    // Verifikasi PIN
+    window.verifyPin = function() {
+      const enteredPin = document.getElementById('pinInput').value;
+      
+      if (enteredPin === ADMIN_PIN) {
+        // Hapus semua chat
+        remove(chatRef)
+          .then(() => {
+            showNotification("Semua chat berhasil dihapus!", false);
+            hidePinModal();
+            
+            // Tambahkan pesan sistem bahwa chat direset
+            push(chatRef, { 
+              user: "SYSTEM", 
+              text: `${username} telah mereset semua pesan`, 
+              time: Date.now(), 
+              system: true 
+            });
+          })
+          .catch((error) => {
+            showNotification("Gagal menghapus chat: " + error.message);
+          });
+      } else {
+        showNotification("PIN salah! Coba lagi.");
+        document.getElementById('pinInput').value = '';
+        document.getElementById('pinInput').focus();
       }
     };
 
-    // Enter = kirim
+    // Join chat
+    window.joinChat = function() {
+      const input = document.getElementById("username");
+      const rememberMe = document.getElementById("rememberMe").checked;
+      username = input.value.trim();
+      
+      if (!username) {
+        showNotification("Nama pengguna tidak boleh kosong!");
+        return;
+      }
+      
+      if (username.length > 20) {
+        showNotification("Nama pengguna maksimal 20 karakter!");
+        return;
+      }
+      
+      // Simpan username di local storage jika remember me dicentang
+      if (rememberMe) {
+        localStorage.setItem('chatUsername', username);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('chatUsername');
+        localStorage.removeItem('rememberMe');
+      }
+      
+      // Generate a simple user ID
+      userId = Date.now().toString();
+      
+      document.getElementById("login").style.display = "none";
+      document.getElementById("chat").style.display = "flex";
+
+      // Add user to online list dengan ID unik
+      userRef = ref(db, `onlineUsers/${userId}`);
+      
+      // Set user online
+      set(userRef, {
+        username: username,
+        joined: Date.now()
+      });
+      
+      // Set up onDisconnect untuk menghapus user ketika keluar
+      onDisconnect(userRef).remove();
+      
+      // Send join notification
+      push(chatRef, { 
+        user: "SYSTEM", 
+        text: `${username} bergabung ke chat`, 
+        time: Date.now(), 
+        system: true 
+      });
+      
+      // Focus on message input
+      setTimeout(() => {
+        document.getElementById("messageInput").focus();
+      }, 100);
+    };
+
+    // Send message
+    window.sendMessage = function() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      
+      if (!text) {
+        showNotification("Pesan tidak boleh kosong!");
+        return;
+      }
+      
+      if (text.length > 500) {
+        showNotification("Pesan terlalu panjang! Maksimal 500 karakter.");
+        return;
+      }
+      
+      push(chatRef, {
+        user: username,
+        userId: userId,
+        text: text,
+        time: Date.now(),
+        system: false
+      });
+      
+      input.value = "";
+    };
+
+    // Enter key to send message
     document.getElementById("messageInput").addEventListener("keyup", (e) => {
       if (e.key === "Enter") sendMessage();
     });
 
-    // Ambil pesan realtime
+    // Listen for new messages
     onChildAdded(chatRef, (data) => {
       const msg = data.val();
+      const messagesDiv = document.getElementById("messages");
       const p = document.createElement("p");
-
+      
       if (msg.system) {
         p.className = "system";
-        p.textContent = msg.text;
+        p.innerHTML = `<i class="fas fa-info-circle"></i> ${msg.text}`;
       } else {
-        p.innerHTML = `<strong>${msg.user}</strong>: ${msg.text}
-          <span class="timestamp">${formatTimestamp(msg.time)}</span>`;
+        const isMyMessage = msg.userId === userId;
+        p.className = isMyMessage ? "message my-message" : "message other-message";
+        
+        p.innerHTML = `
+          <div class="user">${msg.user}</div>
+          <div class="text">${msg.text}</div>
+          <span class="timestamp">${formatTimestamp(msg.time)}</span>
+        `;
       }
-
-      document.getElementById("messages").appendChild(p);
-      const messagesDiv = document.getElementById("messages");
+      
+      messagesDiv.appendChild(p);
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
 
-    // Leave notif
+    // Listen for online users changes
+    onValue(onlineUsersRef, (snapshot) => {
+      const users = snapshot.val();
+      const userCount = users ? Object.keys(users).length : 0;
+      document.getElementById("userCount").textContent = userCount;
+    });
+
+    // Leave notification dan hapus dari daftar online
     window.addEventListener("beforeunload", () => {
       if (username) {
-        push(chatRef, { user: "SYSTEM", text: `${username} keluar dari chat`, time: Date.now(), system: true });
+        // Hapus user dari daftar online
+        if (userRef) {
+          remove(userRef).catch(error => {
+            console.error("Error removing user from online list:", error);
+          });
+        }
+        
+        // Kirim notifikasi keluar
+        push(chatRef, { 
+          user: "SYSTEM", 
+          text: `${username} keluar dari chat`, 
+          time: Date.now(), 
+          system: true 
+        });
       }
+    });
+
+    // Add some initial focus style
+    document.getElementById("username").addEventListener("focus", function() {
+      this.style.borderColor = "#00ffcc";
+      this.style.boxShadow = "0 0 8px rgba(0, 255, 204, 0.5)";
+    });
+
+    document.getElementById("username").addEventListener("blur", function() {
+      this.style.borderColor = "#00aaff";
+      this.style.boxShadow = "none";
+    });
+
+    // Support untuk input PIN
+    document.getElementById("pinInput").addEventListener("input", function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    document.getElementById("pinInput").addEventListener("keyup", function(e) {
+      if (e.key === "Enter") verifyPin();
+    });
+
+    // Cek stored username saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+      checkStoredUsername();
     });
   </script>
 </body>
