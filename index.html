@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Chat - Final Version</title>
+  <title>Space Chat - With Awesome Animations</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -50,6 +50,31 @@
       opacity: 0.4;
     }
 
+    /* Animasi meteor */
+    .meteor {
+      position: absolute;
+      top: -50px;
+      width: 2px;
+      height: 50px;
+      background: linear-gradient(to bottom, transparent, #ffffff);
+      opacity: 0;
+      z-index: -1;
+    }
+
+    @keyframes meteor {
+      0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) rotate(15deg);
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) translateX(100vw) rotate(15deg);
+      }
+    }
+
     @keyframes stars {
       from { transform: translateY(0px); }
       to { transform: translateY(-1000px); }
@@ -60,10 +85,79 @@
       to { background-position: 1000px 5000px; }
     }
 
+    /* Animasi untuk container */
     .container {
       width: 90%;
       max-width: 500px;
       z-index: 1;
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Animasi untuk pesan */
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Animasi untuk notification */
+    @keyframes notificationSlideIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -30px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    /* Animasi untuk button */
+    @keyframes buttonPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.7);
+      }
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(0, 255, 204, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 255, 204, 0);
+      }
+    }
+
+    /* Animasi untuk online indicator */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     #login, #chat {
@@ -74,6 +168,16 @@
       width: 100%;
       box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
       backdrop-filter: blur(5px);
+      animation: containerGlow 3s infinite alternate;
+    }
+
+    @keyframes containerGlow {
+      from {
+        box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+      }
+      to {
+        box-shadow: 0 0 35px rgba(0, 255, 204, 0.7), 0 0 45px rgba(0, 150, 255, 0.4);
+      }
     }
 
     #chat { 
@@ -108,6 +212,7 @@
     .online-count i {
       margin-right: 5px;
       color: #00ff99;
+      animation: pulse 2s infinite;
     }
 
     #messages {
@@ -160,6 +265,7 @@
       position: relative;
       cursor: pointer;
       transition: transform 0.2s;
+      animation: messageSlideIn 0.3s ease-out;
     }
 
     .message:hover {
@@ -236,6 +342,7 @@
       background: rgba(5, 12, 22, 0.8);
       color: #00ffcc;
       border: 1px solid #00aaff;
+      transition: all 0.3s ease;
     }
 
     input::placeholder {
@@ -244,7 +351,8 @@
 
     input:focus {
       border-color: #00ffcc;
-      box-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+      transform: translateY(-2px);
     }
 
     button {
@@ -262,6 +370,7 @@
     button:hover {
       background: linear-gradient(135deg, #00ddbb, #0099ee);
       box-shadow: 0 0 12px rgba(0, 255, 204, 0.7);
+      animation: buttonPulse 1.5s infinite;
     }
 
     button:active {
@@ -292,6 +401,7 @@
       color: white;
       z-index: 100;
       display: none;
+      animation: notificationSlideIn 0.5s ease-out;
     }
 
     .admin-panel {
@@ -310,6 +420,7 @@
     .admin-btn:hover {
       background: linear-gradient(135deg, #ee1155, #dd0066);
       box-shadow: 0 0 12px rgba(255, 0, 85, 0.7);
+      animation: buttonPulse 1.5s infinite;
     }
 
     .remember-me {
@@ -332,6 +443,18 @@
       background: rgba(0, 100, 200, 0.2);
       border-radius: 8px;
       border-left: 3px solid #00aaff;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .reply-header {
@@ -354,6 +477,11 @@
       cursor: pointer;
       font-size: 14px;
       padding: 0;
+      transition: transform 0.2s;
+    }
+
+    .cancel-reply:hover {
+      transform: rotate(90deg);
     }
 
     .reply-preview {
@@ -373,6 +501,7 @@
       color: #5599cc;
       font-size: 12px;
       z-index: 2;
+      animation: fadeIn 2s ease-out;
     }
 
     .modal {
@@ -387,6 +516,7 @@
       justify-content: center;
       align-items: center;
       backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease-out;
     }
 
     .modal-content {
@@ -397,6 +527,18 @@
       width: 90%;
       max-width: 400px;
       box-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
+      animation: scaleIn 0.3s ease-out;
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .modal h3 {
@@ -457,11 +599,67 @@
         flex-direction: column;
       }
     }
+
+    /* Floating astronaut animation */
+    .astronaut {
+      position: absolute;
+      font-size: 24px;
+      opacity: 0.7;
+      z-index: 0;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      25% {
+        transform: translate(20px, -15px) rotate(5deg);
+      }
+      50% {
+        transform: translate(0, -25px) rotate(0deg);
+      }
+      75% {
+        transform: translate(-20px, -15px) rotate(-5deg);
+      }
+    }
+
+    /* Typing animation */
+    .typing-indicator {
+      display: none;
+      padding: 10px;
+      font-size: 12px;
+      color: #5599cc;
+      font-style: italic;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
   <div class="stars"></div>
   <div class="twinkling"></div>
+  
+  <!-- Floating astronauts -->
+  <div class="astronaut" style="top: 10%; left: 10%;">👨‍🚀</div>
+  <div class="astronaut" style="top: 20%; right: 15%;">👩‍🚀</div>
+  <div class="astronaut" style="bottom: 15%; left: 20%;">🚀</div>
   
   <div class="container">
     <div id="login">
@@ -492,6 +690,10 @@
       
       <div id="messages"></div>
       
+      <div class="typing-indicator" id="typingIndicator">
+        <span>•</span><span>•</span><span>•</span> Someone is typing
+      </div>
+      
       <div class="reply-section" id="replySection">
         <div class="reply-header">
           <div class="reply-title">Membalas pesan</div>
@@ -517,7 +719,7 @@
     </div>
   </div>
 
-  <div class="credit">⛧𝙀𝙑𝙄𝙇𝙑𝙊𝙄𝘿 𝙏𝙀𝘼𝙈⛧</div>
+  <div class="credit">by Me</div>
 
   <div class="notification" id="notification"></div>
   
@@ -561,6 +763,31 @@
     let userId = "";
     let userRef = null;
     let replyingTo = null;
+    let lastTypingTime = 0;
+    let typingTimeout = null;
+
+    // Create meteors
+    function createMeteors() {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          createMeteor();
+        }, i * 3000);
+      }
+    }
+
+    function createMeteor() {
+      const meteor = document.createElement('div');
+      meteor.className = 'meteor';
+      meteor.style.left = Math.random() * 100 + 'vw';
+      meteor.style.animation = `meteor ${3 + Math.random() * 2}s linear`;
+      document.body.appendChild(meteor);
+      
+      meteor.addEventListener('animationend', () => {
+        meteor.remove();
+      });
+      
+      setTimeout(createMeteor, 5000 + Math.random() * 10000);
+    }
 
     // Cek apakah ada username yang tersimpan di local storage
     function checkStoredUsername() {
@@ -753,10 +980,31 @@
       input.value = "";
     };
 
+    // Typing indicator
+    function updateTyping() {
+      lastTypingTime = Date.now();
+      
+      if (!typingTimeout) {
+        typingTimeout = setTimeout(() => {
+          const timeSinceLastTyping = Date.now() - lastTypingTime;
+          if (timeSinceLastTyping >= 1000) {
+            document.getElementById('typingIndicator').style.display = 'none';
+            typingTimeout = null;
+          }
+        }, 1000);
+      }
+    }
+
     // Enter key to send message
     document.getElementById("messageInput").addEventListener("keyup", (e) => {
-      if (e.key === "Enter") sendMessage();
+      if (e.key === "Enter") {
+        sendMessage();
+      } else {
+        updateTyping();
+      }
     });
+
+    document.getElementById("messageInput").addEventListener("input", updateTyping);
 
     // Listen for new messages
     onChildAdded(chatRef, (data) => {
@@ -858,6 +1106,7 @@
     // Cek stored username saat halaman dimuat
     document.addEventListener('DOMContentLoaded', function() {
       checkStoredUsername();
+      createMeteors();
     });
   </script>
 </body>
