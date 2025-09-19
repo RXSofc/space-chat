@@ -27,7 +27,7 @@ Space Chat adalah aplikasi chat grup real-time dengan tema luar angkasa yang dib
    · Ketik balasan dan kirim seperti biasa
 4. Menghapus Semua Chat:
    · Klik tombol "Hapus Semua Chat"
-   · Masukkan PIN: 1903
+   · Masukkan PIN: 
    · Semua chat akan terhapus
 
 🛠️ Teknologi
