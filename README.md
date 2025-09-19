@@ -83,7 +83,6 @@ Anda dapat mengkustomisasi aplikasi dengan mudah:
 · Data chat disimpan di Firebase Realtime Database
 · Username disimpan secara lokal di browser pengguna
 
-👨‍💻 Developer
-Dikembangkan oleh @riixs4k
+👨‍💻 Dikembangkan oleh @riixs4k
 
 Note: Aplikasi ini dibuat untuk tujuan edukasi dan demonstrasi. Pastikan untuk mengikuti kebijakan privasi dan persyaratan layanan saat mengimplementasikan di production environment.
