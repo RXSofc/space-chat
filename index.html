@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Chat - Fixed Online Count</title>
+  <title>Space Chat - Reply Feature</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -157,6 +157,13 @@
       margin-bottom: 10px;
       max-width: 80%;
       word-wrap: break-word;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .message:hover {
+      transform: translateY(-2px);
     }
 
     .my-message {
@@ -190,6 +197,29 @@
       display: block;
       margin-top: 4px;
       text-align: right;
+    }
+
+    .reply-indicator {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: rgba(0, 100, 200, 0.2);
+      border-left: 3px solid #00aaff;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .reply-info {
+      display: flex;
+      justify-content: space-between;
+      color: #00aaff;
+      margin-bottom: 4px;
+    }
+
+    .reply-content {
+      color: #aaddff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .input-area {
@@ -293,6 +323,56 @@
     .remember-me input {
       width: auto;
       flex: none;
+    }
+
+    .reply-section {
+      display: none;
+      padding: 8px;
+      margin-bottom: 10px;
+      background: rgba(0, 100, 200, 0.2);
+      border-radius: 8px;
+      border-left: 3px solid #00aaff;
+    }
+
+    .reply-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .reply-title {
+      font-size: 12px;
+      color: #00aaff;
+      font-weight: bold;
+    }
+
+    .cancel-reply {
+      background: none;
+      border: none;
+      color: #ff3366;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+
+    .reply-preview {
+      font-size: 12px;
+      color: #aaddff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .credit {
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #5599cc;
+      font-size: 12px;
+      z-index: 2;
     }
 
     .modal {
@@ -412,6 +492,16 @@
       
       <div id="messages"></div>
       
+      <div class="reply-section" id="replySection">
+        <div class="reply-header">
+          <div class="reply-title">Membalas pesan</div>
+          <button class="cancel-reply" onclick="cancelReply()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="reply-preview" id="replyPreview"></div>
+      </div>
+      
       <div class="input-area">
         <input type="text" id="messageInput" placeholder="Tulis pesan Anda..." maxlength="500">
         <button onclick="sendMessage()">
@@ -426,6 +516,8 @@
       </div>
     </div>
   </div>
+
+  <div class="credit">⛧𝙀𝙑𝙄𝙇𝙑𝙊𝙄𝘿 𝙏𝙀𝘼⛧</div>
 
   <div class="notification" id="notification"></div>
   
@@ -468,6 +560,7 @@
     let username = "";
     let userId = "";
     let userRef = null;
+    let replyingTo = null;
 
     // Cek apakah ada username yang tersimpan di local storage
     function checkStoredUsername() {
@@ -544,6 +637,25 @@
       }
     };
 
+    // Fungsi reply pesan
+    function setupReply(messageData, messageId) {
+      replyingTo = {
+        id: messageId,
+        user: messageData.user,
+        text: messageData.text
+      };
+      
+      document.getElementById('replySection').style.display = 'block';
+      document.getElementById('replyPreview').textContent = `${messageData.user}: ${messageData.text}`;
+      document.getElementById('messageInput').focus();
+    }
+
+    // Batalkan reply
+    window.cancelReply = function() {
+      replyingTo = null;
+      document.getElementById('replySection').style.display = 'none';
+    };
+
     // Join chat
     window.joinChat = function() {
       const input = document.getElementById("username");
@@ -616,13 +728,27 @@
         return;
       }
       
-      push(chatRef, {
+      const messageData = {
         user: username,
         userId: userId,
         text: text,
         time: Date.now(),
         system: false
-      });
+      };
+      
+      // Jika sedang membalas pesan, tambahkan info reply
+      if (replyingTo) {
+        messageData.replyTo = {
+          id: replyingTo.id,
+          user: replyingTo.user,
+          text: replyingTo.text
+        };
+        
+        // Reset reply state
+        cancelReply();
+      }
+      
+      push(chatRef, messageData);
       
       input.value = "";
     };
@@ -637,6 +763,7 @@
       const msg = data.val();
       const messagesDiv = document.getElementById("messages");
       const p = document.createElement("p");
+      const messageId = data.key;
       
       if (msg.system) {
         p.className = "system";
@@ -645,11 +772,36 @@
         const isMyMessage = msg.userId === userId;
         p.className = isMyMessage ? "message my-message" : "message other-message";
         
-        p.innerHTML = `
+        let messageContent = `
           <div class="user">${msg.user}</div>
+        `;
+        
+        // Tambahkan reply indicator jika pesan ini adalah balasan
+        if (msg.replyTo) {
+          messageContent += `
+            <div class="reply-indicator">
+              <div class="reply-info">
+                <span>Membalas ${msg.replyTo.user}</span>
+                <i class="fas fa-reply"></i>
+              </div>
+              <div class="reply-content">${msg.replyTo.text}</div>
+            </div>
+          `;
+        }
+        
+        messageContent += `
           <div class="text">${msg.text}</div>
           <span class="timestamp">${formatTimestamp(msg.time)}</span>
         `;
+        
+        p.innerHTML = messageContent;
+        
+        // Tambahkan event listener untuk reply
+        p.addEventListener('click', () => {
+          if (!msg.system && msg.userId !== userId) {
+            setupReply(msg, messageId);
+          }
+        });
       }
       
       messagesDiv.appendChild(p);
