@@ -8,7 +8,7 @@ Space Chat adalah aplikasi chat grup real-time dengan tema luar angkasa yang dib
 · Tema Luar Angkasa: Desain futuristik dengan efek bintang dan animasi
 · Auto Login: Penyimpanan username di local storage
 · Reply Message: Balas pesan tertentu dengan mudah
-· Admin Panel: Hapus semua chat dengan PIN (1903)
+· Admin Panel: Hapus semua chat dengan PIN
 · Online Counter: Melihat jumlah pengguna online
 · Responsif: Bekerja dengan baik di desktop dan mobile
 
